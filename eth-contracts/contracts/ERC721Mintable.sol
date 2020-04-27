@@ -45,7 +45,7 @@ contract Ownable {
 //  3) create an internal constructor that sets the _paused variable to false
 //  4) create 'whenNotPaused' & 'paused' modifier that throws in the appropriate situation
 //  5) create a Paused & Unpaused event that emits the address that triggered the event
-contract Pausable is Ownable{
+contract Pausable is Ownable {
     bool private _paused;
 
     function getPaused()
@@ -74,12 +74,12 @@ contract Pausable is Ownable{
 
     modifier whenNotPaused()
     {
-        require(!_paused,"contract is paused");
+        require(!_paused, "contract is paused");
         _;
     }
     modifier paused()
     {
-        require(_paused,"contract is not paused");
+        require(_paused, "contract is not paused");
         _;
     }
     event Paused(address from);
@@ -176,13 +176,13 @@ contract ERC721 is Pausable, ERC165 {
     function approve(address to, uint256 tokenId) public {
         address tokenOwner = ownerOf(tokenId);
         // DONE require the given address to not be the owner of the tokenId
-        require(to != tokenOwner,"Address _to_ is owner of tokenId" );
+        require(to != tokenOwner, "Address _to_ is owner of tokenId");
         // DONE require the msg sender to be the owner of the contract or isApprovedForAll() to be true
         require(msg.sender == tokenOwner || isApprovedForAll(tokenOwner, msg.sender), "Caller is not authorized to approve");
         // DONE add 'to' address to token approvals
         _tokenApprovals[tokenId] = to;
         // DONE emit Approval Event
-        emit Approval(msg.sender,to,tokenId);
+        emit Approval(msg.sender, to, tokenId);
     }
 
     function getApproved(uint256 tokenId) public view returns (address) {
@@ -252,27 +252,31 @@ contract ERC721 is Pausable, ERC165 {
     // @dev Internal function to mint a new token
     // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
     function _mint(address to, uint256 tokenId) internal {
-
-        // TODO revert if given tokenId already exists or given address is invalid
-
-        // TODO mint tokenId to given address & increase token count of owner
-
-        // TODO emit Transfer event
+        // DONE revert if given tokenId already exists or given address is invalid
+        require(!_exists(tokenId), "tokenId already exists");
+        require(to != address(0), "Address _to_ is invalid");
+        // DONE mint tokenId to given address & increase token count of owner
+        _tokenOwner[tokenId] = to;
+        _ownedTokensCount[to].increment();
+        // DONE emit Transfer event
+        emit Transfer(address(0), to, tokenId);
     }
 
     // @dev Internal function to transfer ownership of a given token ID to another address.
     // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
     function _transferFrom(address from, address to, uint256 tokenId) internal {
-
-        // TODO: require from address is the owner of the given token
-
-        // TODO: require token is being transfered to valid address
-
-        // TODO: clear approval
-
-        // TODO: update token counts & transfer ownership of the token ID 
-
-        // TODO: emit correct event
+        // DONE: require from address is the owner of the given token
+        require(from == ownerOf(tokenId), "Address _from_ is not token owner");
+        // DONE: require token is being transfered to valid address
+        require(to != address(0), "Address _to_ is invalid");
+        // DONE: clear approval
+        _clearApproval(tokenId);
+        // DONE: update token counts & transfer ownership of the token ID
+        _ownedTokensCount[from].decrement();
+        _ownedTokensCount[to].increment();
+        _tokenOwner[tokenId] = to;
+        // DONE: emit correct event
+        emit Transfer(from, to, tokenId);
     }
 
     /**
