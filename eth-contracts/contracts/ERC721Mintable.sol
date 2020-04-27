@@ -28,7 +28,7 @@ contract Ownable {
     }
     //  4) fill out the transferOwnership function
     function transferOwnership(address newOwner) public onlyOwner {
-        // TODO add functionality to transfer control of the contract to a newOwner.
+        // DONE add functionality to transfer control of the contract to a newOwner.
         // make sure the new owner is a real address
         require(newOwner != address(0), "Address is not valid");
         _owner = newOwner;
@@ -162,29 +162,32 @@ contract ERC721 is Pausable, ERC165 {
     }
 
     function balanceOf(address owner) public view returns (uint256) {
-        // TODO return the token balance of given address
+        // DONE return the token balance of given address
         // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
+        return _ownedTokensCount[owner].current();
     }
 
     function ownerOf(uint256 tokenId) public view returns (address) {
-        // TODO return the owner of the given tokenId
+        // DONE return the owner of the given tokenId
+        return _tokenOwner[tokenId];
     }
 
     //    @dev Approves another address to transfer the given token ID
     function approve(address to, uint256 tokenId) public {
-
-        // TODO require the given address to not be the owner of the tokenId
-
-        // TODO require the msg sender to be the owner of the contract or isApprovedForAll() to be true
-
-        // TODO add 'to' address to token approvals
-
-        // TODO emit Approval Event
-
+        address tokenOwner = ownerOf(tokenId);
+        // DONE require the given address to not be the owner of the tokenId
+        require(to != tokenOwner,"Address _to_ is owner of tokenId" );
+        // DONE require the msg sender to be the owner of the contract or isApprovedForAll() to be true
+        require(msg.sender == tokenOwner || isApprovedForAll(tokenOwner, msg.sender), "Caller is not authorized to approve");
+        // DONE add 'to' address to token approvals
+        _tokenApprovals[tokenId] = to;
+        // DONE emit Approval Event
+        emit Approval(msg.sender,to,tokenId);
     }
 
     function getApproved(uint256 tokenId) public view returns (address) {
-        // TODO return token approval if it exists
+        // DONE return token approval if it exists
+        return _tokenApprovals[tokenId];
     }
 
     /**
@@ -194,7 +197,7 @@ contract ERC721 is Pausable, ERC165 {
      * @param approved representing the status of the approval to be set
      */
     function setApprovalForAll(address to, bool approved) public {
-        require(to != msg.sender);
+        require(to != msg.sender, "Caller is not _to_");
         _operatorApprovals[msg.sender][to] = approved;
         emit ApprovalForAll(msg.sender, to, approved);
     }
