@@ -28,7 +28,7 @@ pragma solidity >= 0.5.0; // Incompatible compiler version - please select a com
 
 // Dummy contract only used to emit to end-user they are using wrong solc
 contract solcChecker {
-/* INCOMPATIBLE SOLC: import the following instead: "github.com/oraclize/ethereum-api/oraclizeAPI_0.4.sol" */ function f(bytes calldata x) external;
+    /* INCOMPATIBLE SOLC: import the following instead: "github.com/oraclize/ethereum-api/oraclizeAPI_0.4.sol" */ function f(bytes calldata x) external;
 }
 
 contract OraclizeI {
@@ -36,15 +36,25 @@ contract OraclizeI {
     address public cbAddress;
 
     function setProofType(byte _proofType) external;
+
     function setCustomGasPrice(uint _gasPrice) external;
+
     function getPrice(string memory _datasource) public returns (uint _dsprice);
+
     function randomDS_getSessionPubKeyHash() external view returns (bytes32 _sessionKeyHash);
+
     function getPrice(string memory _datasource, uint _gasLimit) public returns (uint _dsprice);
+
     function queryN(uint _timestamp, string memory _datasource, bytes memory _argN) public payable returns (bytes32 _id);
+
     function query(uint _timestamp, string calldata _datasource, string calldata _arg) external payable returns (bytes32 _id);
+
     function query2(uint _timestamp, string memory _datasource, string memory _arg1, string memory _arg2) public payable returns (bytes32 _id);
+
     function query_withGasLimit(uint _timestamp, string calldata _datasource, string calldata _arg, uint _gasLimit) external payable returns (bytes32 _id);
+
     function queryN_withGasLimit(uint _timestamp, string calldata _datasource, bytes calldata _argN, uint _gasLimit) external payable returns (bytes32 _id);
+
     function query2_withGasLimit(uint _timestamp, string calldata _datasource, string calldata _arg1, string calldata _arg2, uint _gasLimit) external payable returns (bytes32 _id);
 }
 
@@ -92,7 +102,8 @@ library Buffer {
         if (capacity % 32 != 0) {
             capacity += 32 - (capacity % 32);
         }
-        _buf.capacity = capacity; // Allocate space for the buffer data
+        _buf.capacity = capacity;
+        // Allocate space for the buffer data
         assembly {
             let ptr := mload(0x40)
             mstore(_buf, ptr)
@@ -135,14 +146,15 @@ library Buffer {
             mstore(bufptr, add(buflen, mload(_data))) // Update buffer length
             src := add(_data, 32)
         }
-        for(; len >= 32; len -= 32) { // Copy word-length chunks while possible
+        for (; len >= 32; len -= 32) {// Copy word-length chunks while possible
             assembly {
                 mstore(dest, mload(src))
             }
             dest += 32;
             src += 32;
         }
-        uint mask = 256 ** (32 - len) - 1; // Copy remaining bytes
+        uint mask = 256 ** (32 - len) - 1;
+        // Copy remaining bytes
         assembly {
             let srcpart := and(mload(src), not(mask))
             let destpart := and(mload(dest), mask)
@@ -238,7 +250,7 @@ library CBOR {
         if (_value >= 0) {
             encodeType(_buf, MAJOR_TYPE_INT, uint(_value));
         } else {
-            encodeType(_buf, MAJOR_TYPE_NEGATIVE_INT, uint(-1 - _value));
+            encodeType(_buf, MAJOR_TYPE_NEGATIVE_INT, uint(- 1 - _value));
         }
     }
 
@@ -316,8 +328,9 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork(uint8 _networkID) internal returns (bool _networkSet) {
-      return oraclize_setNetwork();
-      _networkID; // silence the warning and remain backwards compatible
+        return oraclize_setNetwork();
+        _networkID;
+        // silence the warning and remain backwards compatible
     }
 
     function oraclize_setNetworkName(string memory _network_name) internal {
@@ -329,35 +342,35 @@ contract usingOraclize {
     }
 
     function oraclize_setNetwork() internal returns (bool _networkSet) {
-        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed) > 0) { //mainnet
+        if (getCodeSize(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed) > 0) {//mainnet
             OAR = OraclizeAddrResolverI(0x1d3B2638a7cC9f2CB3D298A3DA7a90B67E5506ed);
             oraclize_setNetworkName("eth_mainnet");
             return true;
         }
-        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1) > 0) { //ropsten testnet
+        if (getCodeSize(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1) > 0) {//ropsten testnet
             OAR = OraclizeAddrResolverI(0xc03A2615D5efaf5F49F60B7BB6583eaec212fdf1);
             oraclize_setNetworkName("eth_ropsten3");
             return true;
         }
-        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e) > 0) { //kovan testnet
+        if (getCodeSize(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e) > 0) {//kovan testnet
             OAR = OraclizeAddrResolverI(0xB7A07BcF2Ba2f2703b24C0691b5278999C59AC7e);
             oraclize_setNetworkName("eth_kovan");
             return true;
         }
-        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48) > 0) { //rinkeby testnet
+        if (getCodeSize(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48) > 0) {//rinkeby testnet
             OAR = OraclizeAddrResolverI(0x146500cfd35B22E4A392Fe0aDc06De1a1368Ed48);
             oraclize_setNetworkName("eth_rinkeby");
             return true;
         }
-        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475) > 0) { //ethereum-bridge
+        if (getCodeSize(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475) > 0) {//ethereum-bridge
             OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
             return true;
         }
-        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF) > 0) { //ether.camp ide
+        if (getCodeSize(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF) > 0) {//ether.camp ide
             OAR = OraclizeAddrResolverI(0x20e12A1F859B3FeaE5Fb2A0A32C18F5a65555bBF);
             return true;
         }
-        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA) > 0) { //browser-solidity
+        if (getCodeSize(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA) > 0) {//browser-solidity
             OAR = OraclizeAddrResolverI(0x51efaF4c8B3C9AfBD5aB9F4bbC82784Ab6ef8fAA);
             return true;
         }
@@ -369,8 +382,11 @@ contract usingOraclize {
     }
 
     function __callback(bytes32 _myid, string memory _result, bytes memory _proof) public {
-      return;
-      _myid; _result; _proof; // Silence compiler warnings
+        return;
+        _myid;
+        _result;
+        _proof;
+        // Silence compiler warnings
     }
 
     function oraclize_getPrice(string memory _datasource) oraclizeAPI internal returns (uint _queryPrice) {
@@ -384,7 +400,8 @@ contract usingOraclize {
     function oraclize_query(string memory _datasource, string memory _arg) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource);
         if (price > 1 ether + tx.gasprice * 200000) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         return oraclize.query.value(price)(0, _datasource, _arg);
     }
@@ -392,15 +409,17 @@ contract usingOraclize {
     function oraclize_query(uint _timestamp, string memory _datasource, string memory _arg) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource);
         if (price > 1 ether + tx.gasprice * 200000) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         return oraclize.query.value(price)(_timestamp, _datasource, _arg);
     }
 
     function oraclize_query(uint _timestamp, string memory _datasource, string memory _arg, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
-        uint price = oraclize.getPrice(_datasource,_gasLimit);
+        uint price = oraclize.getPrice(_datasource, _gasLimit);
         if (price > 1 ether + tx.gasprice * _gasLimit) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         return oraclize.query_withGasLimit.value(price)(_timestamp, _datasource, _arg, _gasLimit);
     }
@@ -408,7 +427,8 @@ contract usingOraclize {
     function oraclize_query(string memory _datasource, string memory _arg, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource, _gasLimit);
         if (price > 1 ether + tx.gasprice * _gasLimit) {
-           return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         return oraclize.query_withGasLimit.value(price)(0, _datasource, _arg, _gasLimit);
     }
@@ -416,7 +436,8 @@ contract usingOraclize {
     function oraclize_query(string memory _datasource, string memory _arg1, string memory _arg2) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource);
         if (price > 1 ether + tx.gasprice * 200000) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         return oraclize.query2.value(price)(0, _datasource, _arg1, _arg2);
     }
@@ -424,7 +445,8 @@ contract usingOraclize {
     function oraclize_query(uint _timestamp, string memory _datasource, string memory _arg1, string memory _arg2) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource);
         if (price > 1 ether + tx.gasprice * 200000) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         return oraclize.query2.value(price)(_timestamp, _datasource, _arg1, _arg2);
     }
@@ -432,7 +454,8 @@ contract usingOraclize {
     function oraclize_query(uint _timestamp, string memory _datasource, string memory _arg1, string memory _arg2, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource, _gasLimit);
         if (price > 1 ether + tx.gasprice * _gasLimit) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         return oraclize.query2_withGasLimit.value(price)(_timestamp, _datasource, _arg1, _arg2, _gasLimit);
     }
@@ -440,7 +463,8 @@ contract usingOraclize {
     function oraclize_query(string memory _datasource, string memory _arg1, string memory _arg2, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource, _gasLimit);
         if (price > 1 ether + tx.gasprice * _gasLimit) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         return oraclize.query2_withGasLimit.value(price)(0, _datasource, _arg1, _arg2, _gasLimit);
     }
@@ -448,7 +472,8 @@ contract usingOraclize {
     function oraclize_query(string memory _datasource, string[] memory _argN) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource);
         if (price > 1 ether + tx.gasprice * 200000) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         bytes memory args = stra2cbor(_argN);
         return oraclize.queryN.value(price)(0, _datasource, args);
@@ -457,7 +482,8 @@ contract usingOraclize {
     function oraclize_query(uint _timestamp, string memory _datasource, string[] memory _argN) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource);
         if (price > 1 ether + tx.gasprice * 200000) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         bytes memory args = stra2cbor(_argN);
         return oraclize.queryN.value(price)(_timestamp, _datasource, args);
@@ -466,7 +492,8 @@ contract usingOraclize {
     function oraclize_query(uint _timestamp, string memory _datasource, string[] memory _argN, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource, _gasLimit);
         if (price > 1 ether + tx.gasprice * _gasLimit) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         bytes memory args = stra2cbor(_argN);
         return oraclize.queryN_withGasLimit.value(price)(_timestamp, _datasource, args, _gasLimit);
@@ -475,7 +502,8 @@ contract usingOraclize {
     function oraclize_query(string memory _datasource, string[] memory _argN, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource, _gasLimit);
         if (price > 1 ether + tx.gasprice * _gasLimit) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         bytes memory args = stra2cbor(_argN);
         return oraclize.queryN_withGasLimit.value(price)(0, _datasource, args, _gasLimit);
@@ -644,7 +672,8 @@ contract usingOraclize {
     function oraclize_query(string memory _datasource, bytes[] memory _argN) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource);
         if (price > 1 ether + tx.gasprice * 200000) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         bytes memory args = ba2cbor(_argN);
         return oraclize.queryN.value(price)(0, _datasource, args);
@@ -653,7 +682,8 @@ contract usingOraclize {
     function oraclize_query(uint _timestamp, string memory _datasource, bytes[] memory _argN) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource);
         if (price > 1 ether + tx.gasprice * 200000) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         bytes memory args = ba2cbor(_argN);
         return oraclize.queryN.value(price)(_timestamp, _datasource, args);
@@ -662,7 +692,8 @@ contract usingOraclize {
     function oraclize_query(uint _timestamp, string memory _datasource, bytes[] memory _argN, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource, _gasLimit);
         if (price > 1 ether + tx.gasprice * _gasLimit) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         bytes memory args = ba2cbor(_argN);
         return oraclize.queryN_withGasLimit.value(price)(_timestamp, _datasource, args, _gasLimit);
@@ -671,7 +702,8 @@ contract usingOraclize {
     function oraclize_query(string memory _datasource, bytes[] memory _argN, uint _gasLimit) oraclizeAPI internal returns (bytes32 _id) {
         uint price = oraclize.getPrice(_datasource, _gasLimit);
         if (price > 1 ether + tx.gasprice * _gasLimit) {
-            return 0; // Unexpectedly high price
+            return 0;
+            // Unexpectedly high price
         }
         bytes memory args = ba2cbor(_argN);
         return oraclize.queryN_withGasLimit.value(price)(0, _datasource, args, _gasLimit);
@@ -897,13 +929,13 @@ contract usingOraclize {
         }
         for (uint i = 0; i < minLength; i ++) {
             if (a[i] < b[i]) {
-                return -1;
+                return - 1;
             } else if (a[i] > b[i]) {
                 return 1;
             }
         }
         if (a.length < b.length) {
-            return -1;
+            return - 1;
         } else if (a.length > b.length) {
             return 1;
         } else {
@@ -915,15 +947,15 @@ contract usingOraclize {
         bytes memory h = bytes(_haystack);
         bytes memory n = bytes(_needle);
         if (h.length < 1 || n.length < 1 || (n.length > h.length)) {
-            return -1;
+            return - 1;
         } else if (h.length > (2 ** 128 - 1)) {
-            return -1;
+            return - 1;
         } else {
             uint subindex = 0;
             for (uint i = 0; i < h.length; i++) {
                 if (h[i] == n[0]) {
                     subindex = 1;
-                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex]) {
+                    while (subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex]) {
                         subindex++;
                     }
                     if (subindex == n.length) {
@@ -931,7 +963,7 @@ contract usingOraclize {
                     }
                 }
             }
-            return -1;
+            return - 1;
         }
     }
 
@@ -986,7 +1018,7 @@ contract usingOraclize {
         for (uint i = 0; i < bresult.length; i++) {
             if ((uint(uint8(bresult[i])) >= 48) && (uint(uint8(bresult[i])) <= 57)) {
                 if (decimals) {
-                   if (_b == 0) break;
+                    if (_b == 0) break;
                     else _b--;
                 }
                 mint *= 10;
@@ -1015,11 +1047,11 @@ contract usingOraclize {
         for (uint i = 0; i < bresult.length; i++) {
             if ((uint(uint8(bresult[i])) >= 48) && (uint(uint8(bresult[i])) <= 57)) {
                 if (decimals) {
-                   if (_b == 0) {
-                       break;
-                   } else {
-                       _b--;
-                   }
+                    if (_b == 0) {
+                        break;
+                    } else {
+                        _b--;
+                    }
                 }
                 mint *= 10;
                 mint += uint(uint8(bresult[i])) - 48;
@@ -1078,7 +1110,8 @@ contract usingOraclize {
 
     function oraclize_newRandomDSQuery(uint _delay, uint _nbytes, uint _customGasLimit) internal returns (bytes32 _queryId) {
         require((_nbytes > 0) && (_nbytes <= 32));
-        _delay *= 10; // Convert from seconds to ledger timer ticks
+        _delay *= 10;
+        // Convert from seconds to ledger timer ticks
         bytes memory nbytes = new bytes(1);
         nbytes[0] = byte(uint8(_nbytes));
         bytes memory unonce = new bytes(32);
@@ -1086,11 +1119,11 @@ contract usingOraclize {
         bytes32 sessionKeyHash_bytes32 = oraclize_randomDS_getSessionPubKeyHash();
         assembly {
             mstore(unonce, 0x20)
-            /*
-             The following variables can be relaxed.
-             Check the relaxed random contract at https://github.com/oraclize/ethereum-examples
-             for an idea on how to override and replace commit hash variables.
-            */
+        /*
+         The following variables can be relaxed.
+         Check the relaxed random contract at https://github.com/oraclize/ethereum-examples
+         for an idea on how to override and replace commit hash variables.
+        */
             mstore(add(unonce, 0x20), xor(blockhash(sub(number, 1)), xor(coinbase, timestamp)))
             mstore(sessionKeyHash, 0x20)
             mstore(add(sessionKeyHash, 0x20), sessionKeyHash_bytes32)
@@ -1155,7 +1188,8 @@ contract usingOraclize {
         bytes memory appkey1_pubkey = new bytes(64);
         copyBytes(_proof, 3 + 1, 64, appkey1_pubkey, 0);
         bytes memory tosign2 = new bytes(1 + 65 + 32);
-        tosign2[0] = byte(uint8(1)); //role
+        tosign2[0] = byte(uint8(1));
+        //role
         copyBytes(_proof, _sig2offset - 65, 65, tosign2, 1);
         bytes memory CODEHASH = hex"fd94fa71bc0ba10d39d464d0d8f465efeef0a2764e3887fcc9df41ded20f505c";
         copyBytes(CODEHASH, 0, 32, tosign2, 1 + 65);
@@ -1189,7 +1223,7 @@ contract usingOraclize {
     function matchBytes32Prefix(bytes32 _content, bytes memory _prefix, uint _nRandomBytes) internal pure returns (bool _matchesPrefix) {
         bool match_ = true;
         require(_prefix.length == _nRandomBytes);
-        for (uint256 i = 0; i< _nRandomBytes; i++) {
+        for (uint256 i = 0; i < _nRandomBytes; i++) {
             if (_content[i] != _prefix[i]) {
                 match_ = false;
             }
@@ -1219,7 +1253,7 @@ contract usingOraclize {
         uint sig2offset = ledgerProofLength + 32 + (8 + 1 + 32) + sig1.length + 65;
         copyBytes(_proof, sig2offset - 64, 64, sessionPubkey, 0);
         bytes32 sessionPubkeyHash = sha256(sessionPubkey);
-        if (oraclize_randomDS_args[_queryId] == keccak256(abi.encodePacked(commitmentSlice1, sessionPubkeyHash))) { //unonce, nbytes and sessionKeyHash match
+        if (oraclize_randomDS_args[_queryId] == keccak256(abi.encodePacked(commitmentSlice1, sessionPubkeyHash))) {//unonce, nbytes and sessionKeyHash match
             delete oraclize_randomDS_args[_queryId];
         } else return false;
         // Random DS Proof Step 5: Validity verification for sig1 (keyhash and args signed with the sessionKey)
@@ -1239,8 +1273,10 @@ contract usingOraclize {
     */
     function copyBytes(bytes memory _from, uint _fromOffset, uint _length, bytes memory _to, uint _toOffset) internal pure returns (bytes memory _copiedBytes) {
         uint minLength = _length + _toOffset;
-        require(_to.length >= minLength); // Buffer too small. Should be a better way?
-        uint i = 32 + _fromOffset; // NOTE: the offset 32 is added to skip the `size` field of both bytes variables
+        require(_to.length >= minLength);
+        // Buffer too small. Should be a better way?
+        uint i = 32 + _fromOffset;
+        // NOTE: the offset 32 is added to skip the `size` field of both bytes variables
         uint j = 32 + _toOffset;
         while (i < (32 + _fromOffset + _length)) {
             assembly {
@@ -1296,18 +1332,18 @@ contract usingOraclize {
         assembly {
             r := mload(add(_sig, 32))
             s := mload(add(_sig, 64))
-            /*
-             Here we are loading the last 32 bytes. We exploit the fact that
-             'mload' will pad with zeroes if we overread.
-             There is no 'mload8' to do this, but that would be nicer.
-            */
+        /*
+         Here we are loading the last 32 bytes. We exploit the fact that
+         'mload' will pad with zeroes if we overread.
+         There is no 'mload8' to do this, but that would be nicer.
+        */
             v := byte(0, mload(add(_sig, 96)))
-            /*
-              Alternative solution:
-              'byte' is not working due to the Solidity parser, so lets
-              use the second best option, 'and'
-              v := and(mload(add(_sig, 65)), 255)
-            */
+        /*
+          Alternative solution:
+          'byte' is not working due to the Solidity parser, so lets
+          use the second best option, 'and'
+          v := and(mload(add(_sig, 65)), 255)
+        */
         }
         /*
          albeit non-transactional signatures are not specified by the YP, one would expect it
