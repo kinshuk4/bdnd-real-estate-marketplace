@@ -1,12 +1,20 @@
 pragma solidity >=0.4.21 <0.6.0;
 
 import "./ERC721Mintable.sol";
+import 'openzeppelin-solidity/contracts/drafts/Counters.sol';
 
 // DONE define a contract call to the zokrates generated solidity contract <Verifier> or <renamedVerifier>
 // Verifier Interface is defined below
 
 // DONE define another contract named SolnSquareVerifier that inherits from your ERC721Mintable class
 contract SolnSquareVerifier is CustomERC721Token {
+    Verifier private verifierContract;
+
+    constructor(address verifierAddress)
+    public
+    {
+        verifierContract = Verifier(verifierAddress);
+    }
 
     // DONE define a solutions struct that can hold an index & an address
     struct Solution {
@@ -17,35 +25,35 @@ contract SolnSquareVerifier is CustomERC721Token {
     }
 
     // DONE define an array of the above struct
-    Solution[] solutions;
+    Counters.Counter private numSolutions;
 
     // DONE define a mapping to store unique solutions submitted
-    mapping(bytes32 => Solution) private uniqueSolutions;
+    mapping(bytes32 => Solution) private solutions;
 
 
     // DONE Create an event to emit when a solution is added
     event SolutionAdded(uint256 tokenId, address owner);
 
 
-    // TODO Create a function to add the solutions to the array and emit the event
+    // DONE Create a function to add the solutions to the array and emit the event
     function addSolution(
-        uint[2] memory a, uint[2][2] memory b, uint[2] memory c, uint[2] memory input,
-        uint _tokenId, address _tokenOwner
+        uint[2] memory a, uint[2][2] memory b, uint[2] memory c, uint[2] memory input
     )
     public
     {
         bytes32 solutionKey = getSolutionKey(a, b, c, input);
-        Solution memory solution = Solution({
-            tokenId : _tokenId,
-            tokenOwner : _tokenOwner,
+
+        require(!solutions[solutionKey].exists, "Solution already exists");
+        require(verifierContract.verifyTx(a,b,c,input), "Solution cannot be verified");
+
+        numSolutions.increment();
+        solutions[solutionKey] = Solution({
+            tokenId : numSolutions.current(),
+            tokenOwner : msg.sender,
             isMinted : false,
             exists : true
             });
-        solutions.push(solution);
-
-        require(!uniqueSolutions[solutionKey].exists, "Solution already exists");
-        uniqueSolutions[solutionKey] = solution;
-        emit SolutionAdded(_tokenId, _tokenOwner);
+        emit SolutionAdded(solutions[solutionKey].tokenId, solutions[solutionKey].tokenOwner);
     }
 
     function getSolutionKey
@@ -60,7 +68,8 @@ contract SolnSquareVerifier is CustomERC721Token {
     {
         return keccak256(abi.encodePacked(a, b, c, input));
     }
-    // TODO Create a function to mint new NFT only after the solution has been verified
+
+    // DONE Create a function to mint new NFT only after the solution has been verified
     //  - make sure the solution is unique (has not been used before)
     //  - make sure you handle metadata as well as tokenSupply
     function mintNewTokens(
@@ -72,12 +81,12 @@ contract SolnSquareVerifier is CustomERC721Token {
     public
     {
         bytes32 solutionKey = getSolutionKey(a, b, c, input);
-        require(uniqueSolutions[solutionKey].exists, "Solution does not exist");
-        require(uniqueSolutions[solutionKey].tokenOwner == msg.sender, "Caller is not solution owner");
-        require(!uniqueSolutions[solutionKey].isMinted, "Solution is already minted");
+        require(solutions[solutionKey].exists, "Solution does not exist");
+        require(solutions[solutionKey].tokenOwner == msg.sender, "Caller is not solution owner");
+        require(!solutions[solutionKey].isMinted, "Solution is already minted");
 
-        super.mint(uniqueSolutions[solutionKey].tokenOwner, uniqueSolutions[solutionKey].tokenId);
-        uniqueSolutions[solutionKey].isMinted = true;
+        super.mint(solutions[solutionKey].tokenOwner, solutions[solutionKey].tokenId);
+        solutions[solutionKey].isMinted = true;
     }
 }
 
