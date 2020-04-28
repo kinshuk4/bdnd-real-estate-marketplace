@@ -41,3 +41,4 @@ test:
 console:
 	cd eth-contracts && \
 	truffle console --network development
+
