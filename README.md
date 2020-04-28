@@ -1,6 +1,41 @@
 # bdnd-real-estate-marketplace
 
 The capstone will build upon the knowledge you have gained in the course in order to build a decentralized housing product. 
+Project rubric can be found [here](https://review.udacity.com/#!/rubrics/1712/view).
+
+## Project up and running
+### Install
+
+This repository contains Smart Contract code in Solidity (using Truffle), tests (also using Truffle), dApp scaffolding (using HTML, CSS and JS) and server app scaffolding.
+
+To install, download or clone the repo, then:
+
+`npm install`
+`truffle compile`
+
+### Migrate code
+To migrate:
+`truffle migrate`
+if you are migratng again:
+```bash
+truffle migrate --reset
+```
+
+To migrate:
+`truffle migrate`
+if you are migratng again:
+```bash
+truffle migrate --reset
+```
+
+OR 
+`make migrate`
+
+### Testing
+To test just run following:
+```json
+truffle test ${filename}
+```
 
 
 ## Using Zokrates
@@ -37,10 +72,11 @@ We implement zkSnarks using ZoKrates, a toolbox for zkSNARKs on Ethereum. Tradit
 9. Run `~/zokrates export-verifier`
 
 
-
 ```bash
 docker run -v ${project_path}:/home/zokrates/code -ti zokrates/zokrates /bin/bash
 ```
+## 
+
 # Project Resources
 
 * [Remix - Solidity IDE](https://remix.ethereum.org/)
