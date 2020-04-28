@@ -32,7 +32,7 @@ contract SolnSquareVerifier is CustomERC721Token {
 
 
     // DONE Create an event to emit when a solution is added
-    event SolutionAdded(uint256 tokenId, address owner);
+    event SolutionAdded(uint256 tokenId, address tokenOwner);
 
 
     // DONE Create a function to add the solutions to the array and emit the event
